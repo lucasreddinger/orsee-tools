@@ -51,7 +51,7 @@ $j = 0; // reading (from CSV file) counter
     </tr>
 </table>
 <h3>Form input values</h3>
-<form action="https://econlab.econ.ucsb.edu/orsee/admin/participants_show.php" method="post">
+<form action="<?php echo $target; ?>" method="post">
     <table>
         <tr>
             <td>form[query][<?php echo $i; ?>][bracket_open][type]</td>
@@ -59,6 +59,9 @@ $j = 0; // reading (from CSV file) counter
         </tr>
         <tr><td style="background-color: gray;"></td><td></td></tr>
 <?php
+
+// increment print counter
+$i++;
 
 if (($handle = fopen("emails.csv", "r")) !== FALSE) {
 
@@ -69,9 +72,6 @@ if (($handle = fopen("emails.csv", "r")) !== FALSE) {
 
         // skip the first $skiprows rows
         if ($j <= $skiprows) continue;
-
-        // increment print counter
-        $i++;
 
         // only construct for first $maxrows rows
         if ($i > $maxrows) break;
@@ -101,6 +101,9 @@ EOF;
         <tr><td style="background-color: gray;"></td><td></td></tr>
 
 EOF;
+
+        // increment print counter
+        $i++;
 
     };
 
