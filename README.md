@@ -1,6 +1,6 @@
 # orsee-tools
 
-Supplemental tools for use with [ORSEE](https://github.com/orsee/orsee).
+Supplemental utilities for [ORSEE](https://github.com/orsee/orsee).
 
 ## Query participants in ORSEE using a file of email addresses
 
