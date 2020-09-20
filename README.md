@@ -8,4 +8,4 @@ If a participant's email address becomes undeliverable, you will get lots of fai
 
 The script allows an ORSEE admin to query the participant table from a CSV file of email addresses. The admin can then easily unsubscribe these accounts in bulk in ORSEE.
 
-**[Please see these slides on this tool's usage!](https://github.com/lucasreddinger/orsee-tools/blob/master/query-email-csv-slides/query-email-csv-slides.pdf)**
+**[Please see these slides on tool usage!](https://github.com/lucasreddinger/orsee-tools/blob/master/query-email-csv-slides/query-email-csv-slides.pdf)**
