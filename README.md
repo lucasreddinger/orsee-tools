@@ -1,4 +1,4 @@
-# orsee-tools _(RETIRED)_
+# orsee-tools
 
 Supplemental utilities for [ORSEE](https://github.com/orsee/orsee).
 
