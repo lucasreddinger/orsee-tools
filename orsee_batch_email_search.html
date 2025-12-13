@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ORSEE batch email search</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 900px; margin: 24px auto; }
+textarea { width: 100%; height: 160px; }
+input[type=text], input[type=number] { width: 100%; }
+button { margin-right: 8px; }
+pre { background:#111; color:#ddd; padding:12px; }
+.note { font-size: 0.9em; color: #555; }
+</style>
+</head>
+<body>
+
+<h2>ORSEE participant batch search</h2>
+
+<p>
+Target URL:
+<input type="text" id="target"
+ value="https://orsee.krannert.purdue.edu/admin/participants_show.php">
+</p>
+
+<p>
+Upload CSV:
+<input type="file" id="csv" accept=".csv,text/csv">
+</p>
+
+<p>OR paste text / CSV:</p>
+<textarea id="input"></textarea>
+
+<p>
+Batch size:
+<input type="number" id="batchSize" value="40" min="1">
+</p>
+
+<button onclick="loadEmails()">Load emails</button>
+<button onclick="prev()">Prev batch</button>
+<button onclick="next()">Next batch</button>
+<button onclick="submitBatch()">Submit this batch (opens in new window)</button>
+
+<p class="note">
+Submitting a batch opens ORSEE results in a <strong>new window/tab</strong>.
+Use Back/Next here to continue batching.
+</p>
+
+<p id="status"></p>
+<pre id="preview"></pre>
+
+<form id="form" method="post" target="_blank" style="display:none;"></form>
+
+<script>
+let emails = [];
+let idx = 0;
+
+function extractEmails(text){
+  return [...new Set(
+    (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/ig) || [])
+      .map(e => e.replace(/^mailto:/i,"").toLowerCase())
+  )];
+}
+
+document.getElementById("csv").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  document.getElementById("input").value = text;
+});
+
+function loadEmails(){
+  emails = extractEmails(document.getElementById("input").value);
+  idx = 0;
+  update();
+}
+
+function batch(){
+  return emails.slice(idx, idx + +batchSize.value);
+}
+
+function update(){
+  const b = batch();
+  status.textContent =
+    `Emails: ${emails.length} | Showing ${idx}–${idx + b.length - 1}`;
+  preview.textContent = b.join("\n");
+}
+
+function next(){
+  idx = Math.min(idx + +batchSize.value, emails.length);
+  update();
+}
+
+function prev(){
+  idx = Math.max(0, idx - +batchSize.value);
+  update();
+}
+
+function h(n,v){
+  const i=document.createElement("input");
+  i.type="hidden"; i.name=n; i.value=v; return i;
+}
+
+function submitBatch(){
+  const b = batch();
+  const f = document.getElementById("form");
+  f.innerHTML = "";
+  f.action = document.getElementById("target").value;
+  f.method = "post";
+
+  let i = 0;
+  f.appendChild(h(`form[query][${i}][bracket_open][type]`,"open")); i++;
+
+  b.forEach(e=>{
+    if(i>1) f.appendChild(h(
+      `form[query][${i}][pformtextfields_freetextsearch][logical_op]`,"or"
+    ));
+    f.appendChild(h(
+      `form[query][${i}][pformtextfields_freetextsearch][search_string]`,e
+    ));
+    f.appendChild(h(
+      `form[query][${i}][pformtextfields_freetextsearch][search_field]`,"email"
+    ));
+    f.appendChild(h(
+      `form[query][${i}][pformtextfields_freetextsearch][not]`,""
+    ));
+    i++;
+  });
+
+  f.appendChild(h(`form[query][${i}][bracket_close][type]`,"close")); i++;
+
+  f.appendChild(h(
+    `form[query][${i}][statusids_multiselect][logical_op]`,"and"
+  ));
+  f.appendChild(h(
+    `form[query][${i}][statusids_multiselect][ms_status]`,"1"
+  ));
+
+  f.appendChild(h("search_submit","true"));
+  f.submit();
+}
+</script>
+
+</body>
+</html>
+
