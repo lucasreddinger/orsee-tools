@@ -3,6 +3,7 @@ import csv
 import re
 import sys
 from collections import OrderedDict
+from typing import List, Set
 
 #### config begin
 
@@ -18,12 +19,12 @@ ORIG_RECIP_RE  = re.compile(r"Original-Recipient:\s*rfc822;\s*(.+)", re.I)
 RCPT_ADDR_RE   = re.compile(r"Recipient Address:\s*(.+)", re.I)
 
 FAIL_BLOCK_RE = re.compile(
-    r"Delivery has failed to these recipients or groups:\s*(.+?)(?:\r?\n\r?\n|$)",
+    r"Delivery has failed to these recipients or groups:\s*(.+?)(?:\n\s*\n|$)",
     re.I | re.S
 )
 
-def extract_recipients_from_text(text: str) -> list[str]:
-    hits: list[str] = []
+def extract_recipients_from_text(text: str) -> List[str]:
+    hits: List[str] = []
 
     for m in FINAL_RECIP_RE.findall(text):
         hits += EMAIL_RE.findall(m)
@@ -36,7 +37,7 @@ def extract_recipients_from_text(text: str) -> list[str]:
 
     return hits
 
-def main(in_csv: str, out_csv: str, ignore: set[str]) -> None:
+def main(in_csv: str, out_csv: str, ignore: Set[str]) -> None:
     seen = OrderedDict()
 
     with open(in_csv, "r", newline="", encoding="utf-8", errors="replace") as f:
@@ -67,10 +68,13 @@ def main(in_csv: str, out_csv: str, ignore: set[str]) -> None:
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print(f"usage: {sys.argv[0]} messages.csv recipients.csv [ignore1@x] [ignore2@y] ...", file=sys.stderr)
-        print("  messages.csv is an input file containing email messages,")
-        print("  recipients.csv is an output file containing email recipients,")
-        print("  and any further arguments are email addresses to be ignored.")
+        print(
+            "usage: {} messages.csv recipients.csv [ignore1@x] [ignore2@y] ...".format(sys.argv[0]),
+            file=sys.stderr
+        )
+        print("  messages.csv is an input file containing email messages,", file=sys.stderr)
+        print("  recipients.csv is an output file containing email recipients,", file=sys.stderr)
+        print("  and any further arguments are email addresses to be ignored.", file=sys.stderr)
         sys.exit(2)
 
     in_csv, out_csv = sys.argv[1], sys.argv[2]
