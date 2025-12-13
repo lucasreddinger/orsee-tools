@@ -2,14 +2,15 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>ORSEE batch email search</title>
+<title>ORSEE participant batch search</title>
 <style>
 body { font-family: system-ui, sans-serif; max-width: 900px; margin: 24px auto; }
 textarea { width: 100%; height: 160px; }
 input[type=text], input[type=number] { width: 100%; }
 button { margin-right: 8px; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
 pre { background:#111; color:#ddd; padding:12px; }
-.note { font-size: 0.9em; color: #555; }
+.batch { font-weight: bold; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -23,11 +24,11 @@ Target URL:
 </p>
 
 <p>
-Upload CSV:
-<input type="file" id="csv" accept=".csv,text/csv">
+Upload text or CSV file (one participant per line):
+<input type="file" id="csv" accept=".csv,.txt,text/plain,text/csv">
 </p>
 
-<p>OR paste text / CSV:</p>
+<p>Or paste text (one participant per line):</p>
 <textarea id="input"></textarea>
 
 <p>
@@ -35,63 +36,88 @@ Batch size:
 <input type="number" id="batchSize" value="40" min="1">
 </p>
 
-<button onclick="loadEmails()">Load emails</button>
-<button onclick="prev()">Prev batch</button>
-<button onclick="next()">Next batch</button>
-<button onclick="submitBatch()">Submit this batch (opens in new window)</button>
+<button onclick="loadTokens()">Load tokens</button>
+<button id="prevBtn" onclick="prev()">Prev batch</button>
+<button id="nextBtn" onclick="next()">Next batch</button>
+<button onclick="openBatch()">Open batch in ORSEE</button>
 
-<p class="note">
-Submitting a batch opens ORSEE results in a <strong>new window/tab</strong>.
-Use Back/Next here to continue batching.
-</p>
-
-<p id="status"></p>
+<div id="batchInfo" class="batch"></div>
 <pre id="preview"></pre>
 
 <form id="form" method="post" target="_blank" style="display:none;"></form>
 
 <script>
-let emails = [];
+let tokens = [];
 let idx = 0;
 
-function extractEmails(text){
+const batchInfo = document.getElementById("batchInfo");
+const preview   = document.getElementById("preview");
+const prevBtn   = document.getElementById("prevBtn");
+const nextBtn   = document.getElementById("nextBtn");
+
+function extractTokens(text){
   return [...new Set(
-    (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/ig) || [])
-      .map(e => e.replace(/^mailto:/i,"").toLowerCase())
+    text.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
   )];
 }
 
 document.getElementById("csv").addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  const text = await file.text();
-  document.getElementById("input").value = text;
+  document.getElementById("input").value = await file.text();
 });
 
-function loadEmails(){
-  emails = extractEmails(document.getElementById("input").value);
+function batchSizeVal(){
+  return +document.getElementById("batchSize").value;
+}
+
+function totalBatches(){
+  return Math.ceil(tokens.length / batchSizeVal());
+}
+
+function currentBatch(){
+  return Math.floor(idx / batchSizeVal()) + 1;
+}
+
+function batch(){
+  return tokens.slice(idx, idx + batchSizeVal());
+}
+
+function loadTokens(){
+  tokens = extractTokens(document.getElementById("input").value);
   idx = 0;
   update();
 }
 
-function batch(){
-  return emails.slice(idx, idx + +batchSize.value);
-}
-
 function update(){
+  if (tokens.length === 0) {
+    batchInfo.textContent = "No tokens loaded.";
+    preview.textContent = "";
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+
   const b = batch();
-  status.textContent =
-    `Emails: ${emails.length} | Showing ${idx}–${idx + b.length - 1}`;
+  const cur = currentBatch();
+  const total = totalBatches();
+
+  batchInfo.textContent =
+    `Current batch: ${cur} of ${total} (tokens ${idx + 1}–${idx + b.length})`;
+
   preview.textContent = b.join("\n");
+
+  prevBtn.disabled = (cur === 1);
+  nextBtn.disabled = (cur === total);
 }
 
 function next(){
-  idx = Math.min(idx + +batchSize.value, emails.length);
+  idx = Math.min(idx + batchSizeVal(), tokens.length);
   update();
 }
 
 function prev(){
-  idx = Math.max(0, idx - +batchSize.value);
+  idx = Math.max(0, idx - batchSizeVal());
   update();
 }
 
@@ -100,7 +126,7 @@ function h(n,v){
   i.type="hidden"; i.name=n; i.value=v; return i;
 }
 
-function submitBatch(){
+function openBatch(){
   const b = batch();
   const f = document.getElementById("form");
   f.innerHTML = "";
@@ -110,15 +136,15 @@ function submitBatch(){
   let i = 0;
   f.appendChild(h(`form[query][${i}][bracket_open][type]`,"open")); i++;
 
-  b.forEach(e=>{
+  b.forEach(t=>{
     if(i>1) f.appendChild(h(
       `form[query][${i}][pformtextfields_freetextsearch][logical_op]`,"or"
     ));
     f.appendChild(h(
-      `form[query][${i}][pformtextfields_freetextsearch][search_string]`,e
+      `form[query][${i}][pformtextfields_freetextsearch][search_string]`,t
     ));
     f.appendChild(h(
-      `form[query][${i}][pformtextfields_freetextsearch][search_field]`,"email"
+      `form[query][${i}][pformtextfields_freetextsearch][search_field]`,"all"
     ));
     f.appendChild(h(
       `form[query][${i}][pformtextfields_freetextsearch][not]`,""
@@ -142,4 +168,3 @@ function submitBatch(){
 
 </body>
 </html>
-
