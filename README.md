@@ -21,7 +21,7 @@ This tool lets you input a list of text search strings (one per line). It then d
 
 ### Preparing input data
 
-A python script is provided that can extract recipient email addresses from email messages.
+A Python script extracts recipient email addresses from email messages. You must first export email messages to a text file _en masse_. Thunderbird has a plug-in that can export many email amessages to a CSV file. You then use this script to extract email addresses for the recipients with failed delivery.
 
 1. Install Thunderbird with the *ImportExportTools* add-on
 2. Select multiple emails → right-click → export as CSV
