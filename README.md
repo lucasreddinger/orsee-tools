@@ -10,7 +10,7 @@ A webpage provides an intuitive way to search for many participants in ORSEE at 
 
 The batches are necessary to avoid overloading ORSEE. The webpage default to 40 participants per batch, but you can try a larger batch size.
 
-Note that you keep the webpage tool locally! When you input a file, it does not go to the Internet. Your browser simply loads it locally using Javascript.
+> Note: you keep the webpage tool and participant data stays on your local computer until you search ORSEE. At that point, it sends a search to ORSEE in the exact same way you use ORSEE normally.
 
 A helper Python script extracts email addresses from a large set of emails, removes duplicates, and sorts them.
 
