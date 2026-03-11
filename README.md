@@ -12,7 +12,7 @@ This tool lets you input a list of text search strings (one per line). It then d
 
 ### Usage
 
-1. Download `orsee_batch_search.html` from this repository: click **Raw**, then *Save As*
+1. Download `orsee_batch_search.html` from this repository: click [**Raw**](https://raw.githubusercontent.com/lucasreddinger/orsee-tools/refs/heads/master/orsee_batch_search.html), then *Save As*
 2. Open the file in your web browser
 3. Paste search strings or upload a file search strings (one participant per line)
 4. Step through batches, opening each batch in ORSEE
