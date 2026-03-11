@@ -26,7 +26,7 @@ You then open the web-based search tool in your browser and input the text file.
 
 ### Usage
 
-1. Download the [HTML file](blob/master/orsee_batch_search.html) from this repository: click [**Raw**](https://raw.githubusercontent.com/lucasreddinger/orsee-tools/refs/heads/master/orsee_batch_search.html), then *Save As*
+1. Download the [HTML file](orsee_batch_search.html) from this repository: click [**Raw**](https://raw.githubusercontent.com/lucasreddinger/orsee-tools/refs/heads/master/orsee_batch_search.html), then *Save As*
 2. Open the file in your web browser
 3. Paste search strings or upload a file search strings (one participant per line)
 4. Step through batches, opening each batch in ORSEE
@@ -35,7 +35,7 @@ You then open the web-based search tool in your browser and input the text file.
 
 ### Preparing input data
 
-A helper Python script [extract_recipients.html](blob/master/extract_recipients.py) extracts recipient email addresses from email messages. You must first export email messages to a text file _en masse_. Thunderbird has a plug-in that can export many email amessages to a CSV file. You then use this script to extract email addresses for the recipients with failed delivery.
+A helper Python script [extract_recipients.py](extract_recipients.py) extracts recipient email addresses from email messages. You must first export email messages to a text file _en masse_. Thunderbird has a plug-in that can export many email amessages to a CSV file. You then use this script to extract email addresses for the recipients with failed delivery.
 
 1. Install Thunderbird with the *ImportExportTools* add-on
 2. Select multiple emails → right-click → export as CSV
