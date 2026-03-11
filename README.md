@@ -6,19 +6,19 @@ Supplemental utilities for [ORSEE](https://github.com/orsee/orsee).
 
 These tools facilitate searching for a large number of participants in ORSEE.
 
-A Python script extracts email addresses from a large set of emails, removes duplicates, and sorts them.
-
 A webpage provides an intuitive way to search for many participants in ORSEE at once. In the provided form you may enter multiple search queries, one per line, and return all matches at once. Alternately, you may input a file of strings (such as a text/CSV file of email addresses). The form provides a way to open manageable batches in ORSEE. In ORSEE you may then select all and make changes at once.
 
 The batches are necessary to avoid overloading ORSEE. The webpage default to 40 participants per batch, but you can try a larger batch size.
 
 Note that you keep the webpage tool locally! When you input a file, it does not go to the Internet. Your browser simply loads it locally using Javascript.
 
+A helper Python script extracts email addresses from a large set of emails, removes duplicates, and sorts them.
+
 ### Example use case
 
 You have 1390 bounced emails and you want to unsubscribe those participants.
 
-Using my Python tool, you extract all of the rejected email addresses from that set of emails. This provides a text/CSV file containing 576 unique and sorted email addresses.
+Using my helper Python tool, you extract all of the rejected email addresses from that set of emails. This provides a text/CSV file containing 576 unique and sorted email addresses.
 
 Next, you log-in to ORSEE.
 
